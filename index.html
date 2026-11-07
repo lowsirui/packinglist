@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Packing Lists</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9dfcf;--tabbar:#d8cab3;--ink:#2b2a33;--btn:#7a3b2e;--btnt:#fff8ec;--muted:#6b6256;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#26211c;--tabbar:#352e27;--muted:#b9ad9c;--btn:#c4664f;--btnt:#1d1713}}
+:root[data-theme="dark"]{--bg:#26211c;--tabbar:#352e27;--muted:#b9ad9c;--btn:#c4664f;--btnt:#1d1713}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;min-height:100vh}
+.app{max-width:560px;margin:0 auto;padding:12px 12px 48px}
+.top{display:flex;gap:8px;align-items:flex-end;margin-bottom:0}
+.tabs{display:flex;gap:4px;overflow-x:auto;flex:1;padding-top:6px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;max-width:150px;border:1.5px solid rgba(0,0,0,.35);border-bottom:none;border-radius:8px 8px 0 0;padding:8px 12px;font:inherit;font-size:14px;color:#2b2a33;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;opacity:.7;transform:translateY(2px)}
+.tab.on{opacity:1;font-weight:700;padding-top:11px;transform:none}
+.plus{flex:none;width:40px;height:40px;border-radius:50%;border:none;background:var(--btn);color:var(--btnt);font-size:26px;line-height:1;cursor:pointer}
+.empty{text-align:center;padding:72px 20px;color:var(--muted)}
+.empty h1{font-weight:700;font-size:28px;color:var(--ink);margin:0 0 8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .empty h1{color:#f1e7d6}}
+.big{margin-top:18px;border:none;border-radius:8px;background:var(--btn);color:var(--btnt);font:700 17px Nunito,system-ui,sans-serif;padding:14px 24px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.pad{position:relative;background:var(--paper);border:1.5px solid rgba(0,0,0,.3);border-radius:0 6px 6px 6px;box-shadow:0 6px 16px rgba(0,0,0,.25),3px 3px 0 rgba(0,0,0,.12);overflow:hidden;color:#2b2a33}
+.pad::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:rgba(200,50,50,.55);pointer-events:none}
+.head{padding:12px 12px 6px 62px;border-bottom:2px solid rgba(60,90,140,.35)}
+.title{width:100%;border:none;background:transparent;font:700 24px/1.25 Nunito,system-ui,sans-serif;color:#2b2a33;padding:4px 0;border-bottom:1.5px dotted rgba(0,0,0,.35);border-radius:0}
+.title:focus{outline:none;border-bottom-color:#b0301f}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:13px;color:#4b443a}
+.del{border:1.5px solid #8a2a1c;color:#8a2a1c;background:transparent;border-radius:6px;font:700 13px Nunito,system-ui,sans-serif;padding:6px 10px;cursor:pointer}
+.del.sure{background:#8a2a1c;color:#fff}
+.sec{display:block;width:100%;height:42px;border:none;border-radius:0;background:transparent;font:700 16px Nunito,system-ui,sans-serif;color:#2b2a33;padding:0 12px 0 62px;border-bottom:1px solid rgba(60,90,140,.3)}.sec:focus{outline:none;background:rgba(255,255,255,.45)}
+.row{display:flex;align-items:center;min-height:40px;border-bottom:1px solid rgba(60,90,140,.3);padding-right:6px}
+.cb{flex:none;appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:0 14px 0 14px;border:2px solid #2b2a33;border-radius:4px;background:rgba(255,255,255,.55);display:grid;place-items:center;cursor:pointer}
+.cb:checked::after{content:"\2713";font-weight:700;font-size:19px;line-height:1;color:#1f6b3a}
+.it{flex:1;min-width:0;border:none;background:transparent;font:inherit;color:#2b2a33;padding:9px 4px;border-radius:0}
+.it:focus{outline:none;background:rgba(255,255,255,.45)}
+.it.done{text-decoration:line-through;text-decoration-thickness:2px;opacity:.5}
+.x{flex:none;width:36px;height:36px;border:none;background:transparent;color:#8a2a1c;font-size:22px;cursor:pointer}
+.add{display:block;width:100%;text-align:left;border:none;background:transparent;font:400 26px/1 Nunito,system-ui,sans-serif;color:#4b443a;padding:8px 14px 10px 17px;border-bottom:1px solid rgba(60,90,140,.3);cursor:pointer}
+.foot{height:24px}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;align-items:center;justify-content:center;padding:20px}
+.ov.show{display:flex}
+.dlg{background:#fffaf0;color:#2b2a33;border-radius:12px;padding:22px 20px 16px;max-width:340px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.dlg p{margin:0 0 18px;font-size:17px;line-height:1.4}
+.btns{display:flex;gap:10px;justify-content:flex-end}
+.btns button{font:700 15px Nunito,system-ui,sans-serif;border-radius:8px;padding:10px 16px;cursor:pointer;border:1.5px solid #2b2a33;background:transparent;color:#2b2a33}
+.btns .yes{background:#8a2a1c;border-color:#8a2a1c;color:#fff}
+.sech{display:flex;align-items:center;border-bottom:1px solid rgba(60,90,140,.3);padding-right:6px}
+.sech .sec{flex:1;min-width:0;border-bottom:none}
+.sadd{font:700 15px Nunito,system-ui,sans-serif;padding:12px 12px 12px 62px}
+.del.ok{border-color:#2b2a33;color:#2b2a33}
+.ttl{border-bottom:none;padding:4px 0}
+.tpl .cb{display:none}.tpl .row{padding-left:56px}
+.tplbtn{display:block;margin:18px auto 0;border:none;background:transparent;color:var(--muted);font:600 14px Nunito,system-ui,sans-serif;text-decoration:underline;padding:10px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="tabs" id="tabs"></div><button class="plus" id="plus" aria-label="New packing list">+</button></div>
+  <main id="main"></main>
+<div class="ov" id="ov"><div class="dlg" role="dialog" aria-modal="true"><p id="dmsg"></p><div class="btns"><button id="dno">Cancel</button><button id="dyes" class="yes">Delete</button></div></div></div>
+</div>
+<script>
+var TEMPLATE = [
+"Clothes (Casual, fancy)|Outfit for airport day|Day X outfit|Day X underwear (and socks if any)|Sleep outfit and underwear (1 set for short trips, 2 sets for longer trips)|Sneakers|Flip flops / sandals",
+"Active clothes|Bikini|Swim shorts|Workout clothes|Workout shoes|Resistance band (if needed for flight)",
+"Beauty items|Hair tie|Comb|Makeup (Lip stick, lip gloss, blush, eyeliner, makeup remover)|Sunglasses|Spectacles|Travel inflatable neck pillow (if needed)",
+"Toiletries|Toothpaste|Toothbrush|Face towel (1 for every 3 days)|Body towel|Plastic bag|Facial cleanser (if needed)|Soap and shampoo (if needed)|Sunscreen (if needed)|Mosquito repellant (if needed)|Bandaid|Dry tissues|Wet wipes|Travel hand soap|Sanitary pad / liner (for emergency)|Retainers|Retainer container|Floss sticks",
+"Tech items|Adapter|Phone|Phone charger|Laptop|Laptop charger|JBL speaker|Disposable camera (if needed)",
+"Essentials|Passport|Cash in local currency|Credit card|NRIC|EZ Link card|Earphones|House keys (if any)|Pen|Notebook|Gratitude journal|Birth control pills|Day bag|Luggage|Emergency contact card|Printed copy of flight numbers, hotel numbers, and other bookings",
+"Cold weather|Long sleeved top|Warm legging|Cardigan|Lightweight down jacket|Winter jacket|Winter boots|Warm socks|Scarf|Gloves|Ear muffs|Lip balm|Body moisturiser|Umbrella"
+];
+var COLORS = ["#fff3a8","#ffd1dc","#c9f0d8","#cfe4ff","#e3d4ff","#ffdcb8"];
+var KEY = "packlists-v1";
+var S = {lists:[],active:null,count:0};
+try { var raw = localStorage.getItem(KEY); if (raw) S = JSON.parse(raw); } catch (e) {}
+var confirmId = null, confirmT = null, editTpl = false;
+var TPLBTN = '<button class="tplbtn" data-act="edittpl">Edit template</button>';
+function fromRows(){ return TEMPLATE.map(function(r){ var p=r.split("|"); return {title:p[0], items:p.slice(1).map(function(t){return {t:t,d:false};})}; }); }
+if (!S.tpl) S.tpl = fromRows();
+
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function cur(){ if (editTpl) return {id:"__tpl",name:"Template",color:"#f3ead2",sections:S.tpl}; return S.lists.filter(function(l){return l.id===S.active;})[0]; }
+
+function newList(){
+  S.count++;
+  var l = {id:uid(), name:"Packing List " + S.count, color:COLORS[(S.count-1)%COLORS.length],
+    sections:JSON.parse(JSON.stringify(S.tpl))};
+  editTpl = false; S.lists.push(l); S.active = l.id; save(); render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  var tabs = document.getElementById("tabs");
+  tabs.innerHTML = S.lists.map(function(l){
+    return '<button class="tab'+(l.id===S.active&&!editTpl?' on':'')+'" data-tab="'+l.id+'" style="background:'+l.color+'">'+esc(l.name||"Untitled")+'</button>';
+  }).join("");
+  var main = document.getElementById("main"), l = cur();
+  if (!l) {
+    main.innerHTML = '<div class="empty"><h1>No packing lists yet</h1><div>Tap the button to start your first trip.</div><button class="big" data-act="new">+ New packing list</button></div>'+TPLBTN;
+    return;
+  }
+  var done = 0, total = 0;
+  l.sections.forEach(function(s){ s.items.forEach(function(i){ total++; if (i.d) done++; }); });
+  var h = '<div class="pad'+(editTpl?' tpl':'')+'" style="--paper:'+l.color+'"><div class="head">'
+    + (editTpl ? '<div class="title ttl">Edit template</div>' : '<input class="title" id="title" value="'+esc(l.name)+'" aria-label="List name" maxlength="60">')
+    + '<div class="meta"><span id="prog">'+(editTpl?'New lists start from this':done+' / '+total+' packed')+'</span>'
+    + (editTpl ? '<button class="del ok" data-act="donetpl">Done</button>' : '<button class="del'+(confirmId===l.id?' sure':'')+'" data-act="dellist">'+(confirmId===l.id?'Tap again to delete':'Delete')+'</button>') + '</div></div>';
+  l.sections.forEach(function(s,si){
+    h += '<div class="sech"><input class="sec" data-si="'+si+'" value="'+esc(s.title)+'" aria-label="Section name"><button class="x" data-act="delsec" data-si="'+si+'" aria-label="Delete section">&times;</button></div>';
+    s.items.forEach(function(it,ii){
+      h += '<div class="row"><input type="checkbox" class="cb" data-si="'+si+'" data-ii="'+ii+'"'+(it.d?' checked':'')+' aria-label="Packed">'
+        + '<input class="it'+(it.d?' done':'')+'" data-si="'+si+'" data-ii="'+ii+'" value="'+esc(it.t)+'" aria-label="Item">'
+        + '<button class="x" data-act="delitem" data-si="'+si+'" data-ii="'+ii+'" aria-label="Delete item">&times;</button></div>';
+    });
+    h += '<button class="add" data-act="additem" data-si="'+si+'" aria-label="Add item">+</button>';
+  });
+  main.innerHTML = h + '<button class="add sadd" data-act="addsec">+ Add section</button><div class="foot"></div></div>' + (editTpl ? '' : TPLBTN);
+}
+
+function progress(){
+  var l = cur(), d = 0, t = 0, p = document.getElementById("prog");
+  if (!l || !p) return;
+  l.sections.forEach(function(s){ s.items.forEach(function(i){ t++; if (i.d) d++; }); });
+  p.textContent = d + " / " + t + " packed";
+}
+
+document.getElementById("plus").onclick = newList;
+
+document.addEventListener("click", function(e){
+  var tab = e.target.closest("[data-tab]");
+  if (tab) { editTpl = false; S.active = tab.getAttribute("data-tab"); confirmId = null; save(); render(); return; }
+  var b = e.target.closest("[data-act]");
+  if (!b) return;
+  var a = b.getAttribute("data-act"), l = cur(), si = +b.getAttribute("data-si"), ii = +b.getAttribute("data-ii");
+  if (a === "new") return newList();
+  if (a === "edittpl") { editTpl = true; confirmId = null; render(); window.scrollTo(0,0); return; }
+  if (a === "donetpl") { editTpl = false; render(); window.scrollTo(0,0); return; }
+  if (!l) return;
+  if (a === "delitem") { l.sections[si].items.splice(ii,1); save(); render(); }
+  else if (a === "additem") {
+    l.sections[si].items.push({t:"",d:false}); save(); render();
+    var inputs = document.querySelectorAll('.it[data-si="'+si+'"]');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }
+  else if (a === "delsec") {
+    pendingSec = si;
+    document.getElementById("dmsg").textContent = "Delete the section \u201C" + (l.sections[si].title || "Untitled") + "\u201D and all its items?";
+    document.getElementById("ov").classList.add("show");
+  }
+  else if (a === "addsec") {
+    l.sections.push({title:"New section",items:[]}); save(); render();
+    var ss = document.querySelectorAll(".sec"), last = ss[ss.length-1];
+    if (last) { last.focus(); last.select(); }
+  }
+  else if (a === "dellist") {
+    if (confirmId === l.id) {
+      clearTimeout(confirmT); confirmId = null;
+      var idx = S.lists.indexOf(l); S.lists.splice(idx,1);
+      S.active = S.lists.length ? S.lists[Math.max(0,idx-1)].id : null;
+      save(); render();
+    } else {
+      confirmId = l.id; render();
+      clearTimeout(confirmT); confirmT = setTimeout(function(){ confirmId = null; render(); }, 3000);
+    }
+  }
+});
+
+document.addEventListener("input", function(e){
+  var t = e.target, l = cur();
+  if (!l) return;
+  if (t.id === "title") {
+    l.name = t.value;
+    var tb = document.querySelector('[data-tab="'+l.id+'"]');
+    if (tb) tb.textContent = t.value || "Untitled";
+    save();
+  } else if (t.classList.contains("sec")) {
+    l.sections[+t.getAttribute("data-si")].title = t.value; save();
+  } else if (t.classList.contains("it")) {
+    l.sections[+t.getAttribute("data-si")].items[+t.getAttribute("data-ii")].t = t.value; save();
+  }
+});
+
+document.addEventListener("change", function(e){
+  var t = e.target, l = cur();
+  if (l && t.classList.contains("cb")) {
+    var it = l.sections[+t.getAttribute("data-si")].items[+t.getAttribute("data-ii")];
+    it.d = t.checked;
+    t.parentNode.querySelector(".it").classList.toggle("done", it.d);
+    save(); progress();
+  }
+});
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Enter" && (e.target.classList.contains("it") || e.target.classList.contains("sec") || e.target.id === "title")) e.target.blur();
+});
+
+var pendingSec = null;
+function closeDlg(){ pendingSec = null; document.getElementById("ov").classList.remove("show"); }
+document.getElementById("dno").onclick = closeDlg;
+document.getElementById("ov").onclick = function(e){ if (e.target === this) closeDlg(); };
+document.getElementById("dyes").onclick = function(){
+  var l = cur();
+  if (l && pendingSec !== null) { l.sections.splice(pendingSec,1); save(); render(); }
+  closeDlg();
+};
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeDlg(); });
+if (S.lists.length && !cur()) S.active = S.lists[0].id;
+render();
+</script>
+</body>
+</html>
