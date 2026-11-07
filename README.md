@@ -1,2 +1,0 @@
-# packinglist
-Travel packing lists
